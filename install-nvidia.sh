@@ -34,6 +34,7 @@ APPS_TO_REMOVE=(
     drawing
     pix
     celluloid
+    pidgin
 )
 
 for app in "${APPS_TO_REMOVE[@]}"; do

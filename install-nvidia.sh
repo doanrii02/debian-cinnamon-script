@@ -70,6 +70,21 @@ sudo dpkg --add-architecture i386
 sudo apt update
 sudo apt install -y steam
 
+# Install CoolerControl from Cloudsmith Repo
+echo "Installing CoolerControl..."
+sudo apt install -y curl apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/coolercontrol/coolercontrol/setup.deb.sh' | sudo -E bash
+sudo apt update
+sudo apt install -y coolercontrol
+sudo systemctl enable --now coolercontrold
+
+# Install VS Code from Microsoft Repo
+echo "Installing Visual Studio Code..."
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+sudo apt update
+sudo apt install -y code
+
 # Install NVIDIA Drivers for GTX 970
 echo "Installing NVIDIA proprietary drivers..."
 sudo apt install -y linux-headers-$(uname -r) build-essential dkms
@@ -89,9 +104,25 @@ fi
 
 # Check if NVIDIA installation was successful
 if is_installed "nvidia-driver"; then
-    echo "NVIDIA driver installed successfully! Reboot required."
+    echo "NVIDIA driver installed successfully!"
 else
     echo "NVIDIA driver installation failed!"
 fi
 
+# Check for NVIDIA driver updates
+echo "Checking for NVIDIA driver updates..."
+sudo apt update
+NVIDIA_UPGRADE=$(apt list --upgradable 2>/dev/null | grep nvidia-driver)
+
+if [ -n "$NVIDIA_UPGRADE" ]; then
+    echo "A newer NVIDIA driver is available:"
+    echo "$NVIDIA_UPGRADE"
+    echo "Upgrading NVIDIA driver..."
+    sudo apt upgrade -y nvidia-driver
+    echo "NVIDIA driver updated successfully! A reboot is required."
+else
+    echo "You are already on the latest NVIDIA driver."
+fi
+
 echo "Debloat and setup complete!"
+

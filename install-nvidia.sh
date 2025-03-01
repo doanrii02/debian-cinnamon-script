@@ -87,11 +87,6 @@ if command -v dracut &> /dev/null; then
     echo 'install_items+=" /etc/modprobe.d/nvidia-blacklists-nouveau.conf /etc/modprobe.d/nvidia.conf /etc/modprobe.d/nvidia-options.conf "' | sudo tee /etc/dracut.conf.d/10-nvidia.conf
 fi
 
-# Ensure Wayland compatibility
-echo "Setting up NVIDIA for Wayland..."
-echo "options nvidia-drm modeset=1" | sudo tee -a /etc/modprobe.d/nvidia-options.conf
-echo "options nvidia NVreg_PreserveVideoMemoryAllocations=1" | sudo tee -a /etc/modprobe.d/nvidia-options.conf
-
 # Check if NVIDIA installation was successful
 if is_installed "nvidia-driver"; then
     echo "NVIDIA driver installed successfully! Reboot required."
